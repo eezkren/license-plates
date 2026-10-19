@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-20)
 
 First version, covering Bulgaria: the plate rules of Наредба № I-45 and Наредба № I-181, read on 2026-10-19.
 
