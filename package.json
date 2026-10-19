@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/eezkren/license-plates.git"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "Iskren Ivanov (https://github.com/eezkren)",
   "type": "module",
   "exports": {
@@ -39,7 +39,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "NOTICE"
   ],
   "sideEffects": false,
   "engines": {

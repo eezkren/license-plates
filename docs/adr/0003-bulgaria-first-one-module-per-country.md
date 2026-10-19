@@ -24,5 +24,5 @@ A package that claims many countries and keeps none of them current does more ha
 
 ## Alternatives considered
 
-- **Several countries from the start, from Wikipedia's tables.** Faster to write, impossible to vouch for, and incompatible with the MIT licence.
+- **Several countries from the start, from Wikipedia's tables.** Faster to write, impossible to vouch for, and incompatible with the package's licence (CC BY-SA cannot be relicensed under Apache-2.0).
 - **Bulgaria-only in name and shape (`bg-license-plates`).** Simplest today, a rename and a breaking API change the day a second country is needed.

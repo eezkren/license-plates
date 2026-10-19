@@ -6,7 +6,7 @@ Used in production by MotoManager (motomanager.bg)
 
 [![CI](https://github.com/eezkren/license-plates/actions/workflows/ci.yml/badge.svg)](https://github.com/eezkren/license-plates/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/license-plates)](https://www.npmjs.com/package/license-plates)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 [Български](#български) · [English](#english)
 
@@ -105,7 +105,7 @@ npm run lint && npm run typecheck && npm run build
 
 ### Лиценз
 
-[MIT](LICENSE) © Iskren Ivanov
+[Apache-2.0](LICENSE) © Iskren Ivanov, вижте и [NOTICE](NOTICE).
 
 ---
 
@@ -186,4 +186,4 @@ A plate belongs to a car and through it to a person, so it is personal data. The
 
 ### License
 
-[MIT](LICENSE) © Iskren Ivanov
+[Apache-2.0](LICENSE) © Iskren Ivanov, see also [NOTICE](NOTICE).
