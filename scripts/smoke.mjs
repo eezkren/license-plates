@@ -3,6 +3,7 @@
 // which the dev tools themselves no longer run on.
 import assert from "node:assert/strict";
 import { check, classify, format, normalize } from "../dist/index.js";
+import * as bg from "../dist/bg/index.js";
 
 assert.equal(normalize("св 1234 ах"), "CB1234AX");
 assert.deepEqual(check("ca 1234 bд"), {
@@ -11,8 +12,9 @@ assert.deepEqual(check("ca 1234 bд"), {
   plate: "CA1234BД",
   characters: ["Д"],
 });
-assert.equal(classify("ХН 0042").kind, "foreigner");
+assert.equal(bg.classify("ХН 0042").kind, "foreigner");
+assert.equal(classify("ХН 0042").matches[0].country, "BG");
 assert.equal(classify("B-XY 123").status, "unrecognised");
 assert.equal(format("са-1234-вх"), "CA 1234 BX");
 
-console.log(`bg-license-plates works on Node ${process.version}`);
+console.log(`license-plates works on Node ${process.version}`);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CYRILLIC_TO_LATIN, PLATE_LETTERS, REGIONS, isRegionCode } from "../src/index.js";
+import { CYRILLIC_TO_LATIN } from "../../src/index.js";
+import { PLATE_LETTERS, REGIONS, isRegionCode } from "../../src/bg/index.js";
 
 describe("REGIONS", () => {
   it("has the 28 regions of Bulgaria, Sofia City under three codes", () => {

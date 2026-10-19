@@ -1,25 +1,25 @@
 {
-  "name": "bg-license-plates",
+  "name": "license-plates",
   "version": "0.1.0",
-  "description": "Bulgarian vehicle registration plates: normalise, check, classify and format, with every rule cited to the МВР regulation.",
+  "description": "Vehicle registration plates by country, starting with Bulgaria: normalise, check, classify and format, with every rule cited to its regulation.",
   "keywords": [
-    "bulgaria",
-    "bulgarian",
     "license-plate",
     "licence-plate",
     "number-plate",
     "registration-plate",
     "vehicle",
+    "bulgaria",
+    "bulgarian",
     "регистрационен-номер",
     "мпс"
   ],
-  "homepage": "https://github.com/eezkren/bg-license-plates#readme",
+  "homepage": "https://github.com/eezkren/license-plates#readme",
   "bugs": {
-    "url": "https://github.com/eezkren/bg-license-plates/issues"
+    "url": "https://github.com/eezkren/license-plates/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eezkren/bg-license-plates.git"
+    "url": "git+https://github.com/eezkren/license-plates.git"
   },
   "license": "MIT",
   "author": "Iskren Ivanov (https://github.com/eezkren)",
@@ -28,6 +28,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./bg": {
+      "types": "./dist/bg/index.d.ts",
+      "default": "./dist/bg/index.js"
     },
     "./package.json": "./package.json"
   },

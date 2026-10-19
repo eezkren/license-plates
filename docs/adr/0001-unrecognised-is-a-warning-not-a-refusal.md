@@ -13,7 +13,7 @@ The package also cannot know whether a Bulgarian-looking plate was ever issued. 
 
 1. **Refuse only what no plate can be.** `check` refuses a plate that normalises to nothing (blank, dashes only) and one that keeps a Cyrillic letter outside the twelve plate letters (Наредба № I-45, чл. 24, ал. 7). No country's plate carries Б or Ж in a form a Bulgarian workshop would type.
 2. **Everything else passes `check`.** A Latin letter outside the twelve („G“, „Ü“), a dot, a format nobody knows: all pass. They can be on a foreign plate.
-3. **`classify` answers, it does not judge.** A plate is `bulgarian` (with its kind), `unrecognised` (no Bulgarian format fits), or `invalid` (what `check` refuses). The caller decides what to do with `unrecognised`; the intended answer is a warning such as „Не прилича на български номер. Сигурни ли сте?“.
+3. **`classify` answers, it does not judge.** A plate is `recognised` (with its country and kind), `unrecognised` (no covered country's format fits), or `invalid` (what `check` refuses). The caller decides what to do with `unrecognised`; the intended answer is a warning such as „Не прилича на български номер. Сигурни ли сте?“.
 
 ## Consequences
 

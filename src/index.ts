@@ -1,23 +1,20 @@
+/**
+ * The country-neutral entry: one stored form for any plate (`normalize`), the
+ * one refusal (`check`), which country a plate can be from (`classify`) and the
+ * one display form (`format`). Each country's own rules live in its module,
+ * also reachable as `license-plates/<country>`.
+ */
 export { normalize } from "./normalize.js";
 export { check, type CheckResult, type RefusalReason } from "./check.js";
 export {
   classify,
-  LEGAL_BASIS,
-  type BulgarianPlate,
+  COUNTRIES,
   type Classification,
-  type DealerPlate,
-  type DiplomaticPlate,
-  type ElectricPlate,
-  type ForeignerPlate,
-  type InvalidPlate,
-  type MilitaryPlate,
-  type PersonalisedPlate,
-  type PlateKind,
-  type RegularPlate,
-  type TrailerPlate,
-  type TransitPlate,
-  type UnrecognisedPlate,
+  type Country,
+  type CountryPlate,
+  type RecognisedPlate,
 } from "./classify.js";
 export { format } from "./format.js";
-export { REGIONS, isRegionCode, type Region, type RegionCode } from "./regions.js";
-export { CYRILLIC_TO_LATIN, PLATE_LETTERS, type CyrillicPlateLetter } from "./letters.js";
+export type { InvalidPlate, UnrecognisedPlate } from "./result.js";
+export { CYRILLIC_TO_LATIN, type CyrillicPlateLetter } from "./letters.js";
+export * as bg from "./bg/index.js";

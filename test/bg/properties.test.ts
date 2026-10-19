@@ -1,7 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
+import { CYRILLIC_TO_LATIN } from "../../src/index.js";
 import {
-  CYRILLIC_TO_LATIN,
   PLATE_LETTERS,
   REGIONS,
   check,
@@ -9,7 +9,7 @@ import {
   format,
   normalize,
   type PlateKind,
-} from "../src/index.js";
+} from "../../src/bg/index.js";
 
 // Properties over generated input. The plates generated here are as invented
 // as the hand-written ones: random combinations in a valid format.
@@ -89,8 +89,8 @@ describe("properties", () => {
           printed.chain((shown) => fc.tuple(fc.constant(shown), typedAs(shown))),
           ([shown, typed]) => {
             const result = classify(typed);
-            expect(result.status).toBe("bulgarian");
-            expect(result.status === "bulgarian" && result.kind).toBe(kind);
+            expect(result.status).toBe("recognised");
+            expect(result.status === "recognised" && result.kind).toBe(kind);
             expect(result.display).toBe(shown);
             expect(format(typed)).toBe(shown);
           },

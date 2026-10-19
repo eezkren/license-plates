@@ -1,23 +1,27 @@
-# bg-license-plates
+# license-plates
 
-Bulgarian vehicle registration plates: normalise, check, classify and format, with every rule cited to the МВР regulation.
+Vehicle registration plates by country, starting with Bulgaria: normalise, check, classify and format, with every rule cited to its regulation.
 
 Used in production by MotoManager (motomanager.bg)
 
-[![CI](https://github.com/eezkren/bg-license-plates/actions/workflows/ci.yml/badge.svg)](https://github.com/eezkren/bg-license-plates/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/bg-license-plates)](https://www.npmjs.com/package/bg-license-plates)
+[![CI](https://github.com/eezkren/license-plates/actions/workflows/ci.yml/badge.svg)](https://github.com/eezkren/license-plates/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/license-plates)](https://www.npmjs.com/package/license-plates)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 [Български](#български) · [English](#english)
 
 ```ts
-import { check, classify, format, normalize } from "bg-license-plates";
+import { check, classify, format, normalize } from "license-plates";
 
 normalize("св 1234 ах"); // "CB1234AX"
 format("са-1234-вх"); // "CA 1234 BX"
-classify("СА 1234 ВХ"); // { status: "bulgarian", kind: "regular", code: "CA", region: { name: "София (столица)", … }, … }
-classify("B-XY 123"); // { status: "unrecognised", plate: "BXY123", display: "BXY123" }
 check("СА 1234 БВ"); // { ok: false, reason: "impossible-characters", characters: ["Б"], … }
+classify("B-XY 123"); // { status: "unrecognised", plate: "BXY123", display: "BXY123" }
+classify("СА 1234 ВХ"); // { status: "recognised", display: "CA 1234 BX", matches: [{ country: "BG", kind: "regular", … }], … }
+
+import { classify as classifyBg } from "license-plates/bg";
+
+classifyBg("СА 1234 ВХ"); // { status: "recognised", country: "BG", kind: "regular", code: "CA", region: { name: "София (столица)", … }, … }
 ```
 
 Zero runtime dependencies, ESM with TypeScript types, published with npm provenance. Every plate in the examples and tests is invented.
@@ -26,28 +30,34 @@ Zero runtime dependencies, ESM with TypeScript types, published with npm provena
 
 ## Български
 
-Номерът на колата често е единственият ѝ идентификатор, а хората го пишат различно: на кирилица или на латиница, с малки букви, с интервали, с тирета. „СА 1234 ВХ“ на българска клавиатура и „CA 1234 BX“ на английска изглеждат еднакво, но са различни низове. Този пакет ги свежда до една форма, казва дали номерът може да е български и от какъв вид, и го показва по един начин.
+Номерът на колата често е единственият ѝ идентификатор, а хората го пишат различно: на кирилица или на латиница, с малки букви, с интервали, с тирета. „СА 1234 ВХ“ на българска клавиатура и „CA 1234 BX“ на английска изглеждат еднакво, но са различни низове. Този пакет ги свежда до една форма, казва от коя държава може да е номерът и от какъв вид е там, и го показва по един начин.
 
-Въпросът, на който отговаря, е **„на коя държава може да е този номер“**, не „валиден ли е“. Пакетът знае форматите, в които МВР издава номера, не кои номера са издадени. Номер, който не пасва на български формат, може да е чужд, затова отговорът е предупреждение, не отказ. Отказ има само за знаци, които не може да ги има на номер.
+Въпросът, на който отговаря, е **„на коя държава може да е този номер“**, не „валиден ли е“. Пакетът знае форматите, в които държавата издава номера, не кои номера са издадени. Номер, който не пасва на нито един познат формат, може да е от държава, която пакетът още не покрива, затова отговорът е предупреждение, не отказ. Отказ има само за знаци, които не може да ги има на номер.
+
+Засега пакетът покрива само **България**. Всяка държава е отделен модул (`license-plates/bg`), а коренът на пакета е общ за всички държави, така че следващата държава е добавка, не преименуване ([ADR 0003](docs/adr/0003-bulgaria-first-one-module-per-country.md)).
 
 ### Инсталиране
 
 ```sh
-npm install bg-license-plates
+npm install license-plates
 ```
 
 ### Функции
 
-| Функция          | Отговаря на                                                                                                                                                                                                                                                           |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `normalize(raw)` | Формата за пазене и сравнение: главни латински букви, без интервали и тирета. 12-те кирилски букви на номерата стават латинските, на които приличат (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                                                     |
-| `check(raw)`     | Може ли изобщо да е номер. Отказва празен номер (или само тирета) и номер с кирилска буква извън 12-те (`reason: "impossible-characters"` и самите букви). Всичко друго минава.                                                                                       |
-| `classify(raw)`  | Може ли да е български номер и от какъв вид. `status` е `"bulgarian"` (с `kind` и частите на номера), `"unrecognised"` (не е български формат, предупреждение) или `"invalid"` (това, което `check` отказва). Всеки разпознат номер носи `basis`, члена от наредбата. |
-| `format(raw)`    | Единственият начин за показване: „CA 1234 BX“. Разпознат номер се разделя така, както е на табелата; всичко останало се показва нормализирано.                                                                                                                        |
+`license-plates`, общо за всички държави:
 
-Освен тях: `REGIONS` (кодът на всяка област), `LEGAL_BASIS` (основанието за всеки вид), `CYRILLIC_TO_LATIN` и `PLATE_LETTERS`.
+| Функция          | Отговаря на                                                                                                                                                                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `normalize(raw)` | Формата за пазене и сравнение: главни латински букви, без интервали и тирета. 12-те кирилски букви, които приличат на латински, стават латинските (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                                    |
+| `check(raw)`     | Може ли изобщо да е номер. Отказва празен номер (или само тирета) и номер с кирилска буква извън 12-те (`reason: "impossible-characters"` и самите букви). Всичко друго минава.                                                                    |
+| `classify(raw)`  | От коя държава може да е. `status` е `"recognised"` (в `matches` е прочитът на всяка държава, чийто формат пасва, с `country` и `kind`), `"unrecognised"` (нито един познат формат: предупреждение) или `"invalid"` (това, което `check` отказва). |
+| `format(raw)`    | Единственият начин за показване: „CA 1234 BX“. Разпознат номер се разделя така, както е на табелата; всичко останало се показва нормализирано.                                                                                                     |
 
-### Видове номера
+Освен тях: `COUNTRIES` (покритите държави, засега `["BG"]`), `CYRILLIC_TO_LATIN` и модулът `bg`.
+
+`license-plates/bg`, само България: `classify(raw)` с отговор „български ли е и от какъв вид“ (`status: "recognised"` с `kind`, частите на номера и `basis`, члена от наредбата; иначе `"unrecognised"` или `"invalid"`), `format(raw)`, `REGIONS` (кодът на всяка област), `isRegionCode`, `LEGAL_BASIS` (основанието за всеки вид), `PLATE_LETTERS`, както и `normalize` и `check`, за да стига един import.
+
+### Български номера
 
 | `kind`         | Формат                                                                                 | Пример              | Основание                                                                                 |
 | -------------- | -------------------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
@@ -61,7 +71,7 @@ npm install bg-license-plates
 | `military`     | ВА и 6 цифри                                                                           | ВА 123456           | Наредба № Н-13 от 2004 г. на МО, по описанието на МВР; Наредба № I-45, чл. 31             |
 | `diplomatic`   | С (дипломатически), СС (консулски), СТ (административно-технически персонал) и 4 цифри | СС 1234             | Наредба № I-181, чл. 17, ал. 1, т. 1 и ал. 2                                              |
 
-Когато един низ пасва на два формата, печели по-конкретният: „С1234АВ“ е обикновен номер на София, а не личен. Пълният ред е в коментара на `classify`.
+Когато един низ пасва на два формата, печели по-конкретният: „С1234АВ“ е обикновен номер на София, а не личен. Пълният ред е в коментара на `readPlate` в `src/bg/classify.ts`.
 
 Всяко правило е прочетено от първоизточника на 2026-10-19: наредбите на МВР и страниците на МВР. [docs/sources.md](docs/sources.md) цитира всеки член, дава връзка към текста и посочва за всяка област бележката на областната дирекция, която показва кода ѝ. Уикипедия е ползвана само като подсказка какво да се търси; от нея не е копирано нищо.
 
@@ -69,7 +79,7 @@ npm install bg-license-plates
 
 - [ADR 0001](docs/adr/0001-unrecognised-is-a-warning-not-a-refusal.md): непознат формат е предупреждение, не отказ.
 - [ADR 0002](docs/adr/0002-cyrillic-is-stored-as-latin.md): номерът се пази на латиница, на каквато и азбука да е написан.
-- [ADR 0003](docs/adr/0003-bulgaria-only.md): само България.
+- [ADR 0003](docs/adr/0003-bulgaria-first-one-module-per-country.md): първо България, по един модул за всяка държава.
 
 ### Какво не е уточнено
 
@@ -88,7 +98,7 @@ npm run test:mutation  # мутационно тестване със Stryker
 npm run lint && npm run typecheck && npm run build
 ```
 
-Тестовете са три вида: примери за всеки вид номер и всяка граница на формата; свойства с [fast-check](https://fast-check.dev) (всеки генериран номер от всеки вид, написан по какъвто и да е начин, се чете като този вид и се показва обратно); и съвпадение с правилата, които MotoManager ползваше преди пакета, върху произволен Unicode. Мутационният резултат е 100% (вижте `reports/mutation/` след `npm run test:mutation`).
+Тестовете са три вида: примери за всеки вид номер и всяка граница на формата; свойства с [fast-check](https://fast-check.dev) (всеки генериран номер от всеки вид, написан по какъвто и да е начин, се чете като този вид и се показва обратно); и съвпадение с правилата, които MotoManager ползваше преди пакета, върху произволен Unicode. Мутационният резултат е 100%, а CI пада под 100% (вижте `reports/mutation/` след `npm run test:mutation`).
 
 Номер на кола е свързан с човек, значи е лични данни. В репото няма нито един истински номер: всички примери са измислени във валиден формат.
 
@@ -100,28 +110,34 @@ npm run lint && npm run typecheck && npm run build
 
 ## English
 
-A car's plate is often its only identifier, and people type it in many ways: in Cyrillic or Latin, in lower case, with spaces, with dashes. „СА 1234 ВХ“ typed on a Bulgarian keyboard and „CA 1234 BX“ typed on an English one look the same and are different strings. This package reduces them to one form, says whether a plate can be Bulgarian and of which kind, and shows it one way.
+A car's plate is often its only identifier, and people type it in many ways: in Cyrillic or Latin, in lower case, with spaces, with dashes. „СА 1234 ВХ“ typed on a Bulgarian keyboard and „CA 1234 BX“ typed on an English one look the same and are different strings. This package reduces them to one form, says which country a plate can be from and what kind of plate it is there, and shows it one way.
 
-The question it answers is **"which country can this plate be from"**, not "is it valid". The package knows the formats МВР (the Ministry of Interior) issues plates in, not which plates were issued. A plate that fits no Bulgarian format may be foreign, so the answer is a warning, not a refusal. The only refusal is for characters no plate can have.
+The question it answers is **"which country can this plate be from"**, not "is it valid". The package knows the formats a country issues plates in, not which plates were issued. A plate that fits no known format may be from a country the package does not cover yet, so the answer is a warning, not a refusal. The only refusal is for characters no plate can have.
+
+For now the package covers **Bulgaria** only. Each country is its own module (`license-plates/bg`) and the package root is shared by all countries, so the next country is an addition, not a rename ([ADR 0003](docs/adr/0003-bulgaria-first-one-module-per-country.md)).
 
 ### Install
 
 ```sh
-npm install bg-license-plates
+npm install license-plates
 ```
 
 ### Functions
 
-| Function         | Answers                                                                                                                                                                                                                                                                         |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `normalize(raw)` | The form to store and compare: Latin capitals, no spaces or dashes. The twelve Cyrillic plate letters become the Latin letters they look like (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                                                                     |
-| `check(raw)`     | Can it be a plate at all. Refuses an empty plate (or dashes only) and a plate with a Cyrillic letter outside the twelve (`reason: "impossible-characters"`, with the letters). Everything else passes.                                                                          |
-| `classify(raw)`  | Can it be a Bulgarian plate, and of which kind. `status` is `"bulgarian"` (with `kind` and the plate's parts), `"unrecognised"` (not a Bulgarian format: a warning) or `"invalid"` (what `check` refuses). Every recognised plate carries `basis`, the provision it comes from. |
-| `format(raw)`    | The one way to show a plate: "CA 1234 BX". A recognised plate is spaced as it is printed; anything else is shown normalised.                                                                                                                                                    |
+`license-plates`, shared by all countries:
 
-Also exported: `REGIONS` (each region's code), `LEGAL_BASIS` (the provision for each kind), `CYRILLIC_TO_LATIN` and `PLATE_LETTERS`.
+| Function         | Answers                                                                                                                                                                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `normalize(raw)` | The form to store and compare: Latin capitals, no spaces or dashes. The twelve Cyrillic letters that look like Latin ones become the Latin letters (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                     |
+| `check(raw)`     | Can it be a plate at all. Refuses an empty plate (or dashes only) and a plate with a Cyrillic letter outside the twelve (`reason: "impossible-characters"`, with the letters). Everything else passes.                               |
+| `classify(raw)`  | Which country it can be from. `status` is `"recognised"` (`matches` holds each country's reading whose format fits, with `country` and `kind`), `"unrecognised"` (no known format: a warning) or `"invalid"` (what `check` refuses). |
+| `format(raw)`    | The one way to show a plate: "CA 1234 BX". A recognised plate is spaced as it is printed; anything else is shown normalised.                                                                                                         |
 
-### Kinds of plate
+Also exported: `COUNTRIES` (the covered countries, `["BG"]` for now), `CYRILLIC_TO_LATIN` and the `bg` module.
+
+`license-plates/bg`, Bulgaria only: `classify(raw)` answering "is it Bulgarian, and of which kind" (`status: "recognised"` with `kind`, the plate's parts and `basis`, the provision it comes from; otherwise `"unrecognised"` or `"invalid"`), `format(raw)`, `REGIONS` (each region's code), `isRegionCode`, `LEGAL_BASIS` (the provision for each kind), `PLATE_LETTERS`, and `normalize` and `check` too, so one import is enough.
+
+### Bulgarian plates
 
 | `kind`         | Format                                                                              | Example             | Source                                                                                     |
 | -------------- | ----------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------ |
@@ -135,7 +151,7 @@ Also exported: `REGIONS` (each region's code), `LEGAL_BASIS` (the provision for 
 | `military`     | ВА and 6 digits                                                                     | ВА 123456           | Наредба № Н-13 of 2004 (Ministry of Defence), as МВР describes it; Наредба № I-45, чл. 31  |
 | `diplomatic`   | С (diplomatic), СС (consular), СТ (administrative and technical staff) and 4 digits | СС 1234             | Наредба № I-181, чл. 17, ал. 1, т. 1 и ал. 2                                               |
 
-Where one string fits two formats, the more specific wins: "С1234АВ" is a regular Sofia plate, not a personalised one. The full order is in the comment on `classify`.
+Where one string fits two formats, the more specific wins: "С1234АВ" is a regular Sofia plate, not a personalised one. The full order is in the comment on `readPlate` in `src/bg/classify.ts`.
 
 Every rule was read from the primary source on 2026-10-19: МВР's regulations and its own pages. [docs/sources.md](docs/sources.md) quotes each provision, links the text, and for each region gives the notice of its police directorate that shows its code. Wikipedia was used only as a hint of what to look for; nothing is copied from it.
 
@@ -143,7 +159,7 @@ Every rule was read from the primary source on 2026-10-19: МВР's regulations 
 
 - [ADR 0001](docs/adr/0001-unrecognised-is-a-warning-not-a-refusal.md): an unrecognised plate is a warning, not a refusal.
 - [ADR 0002](docs/adr/0002-cyrillic-is-stored-as-latin.md): a plate is stored in Latin letters, whatever alphabet it was typed in.
-- [ADR 0003](docs/adr/0003-bulgaria-only.md): Bulgaria only.
+- [ADR 0003](docs/adr/0003-bulgaria-first-one-module-per-country.md): Bulgaria first, one module per country.
 
 ### What is not settled
 
@@ -162,7 +178,7 @@ npm run test:mutation  # mutation testing with Stryker
 npm run lint && npm run typecheck && npm run build
 ```
 
-The tests are of three sorts: examples for every kind of plate and every edge of each format; properties with [fast-check](https://fast-check.dev) (every generated plate of every kind, typed any way, is read as that kind and printed back); and agreement with the rules MotoManager used before this package, over arbitrary Unicode. The mutation score is 100% (see `reports/mutation/` after `npm run test:mutation`).
+The tests are of three sorts: examples for every kind of plate and every edge of each format; properties with [fast-check](https://fast-check.dev) (every generated plate of every kind, typed any way, is read as that kind and printed back); and agreement with the rules MotoManager used before this package, over arbitrary Unicode. The mutation score is 100%, and CI fails below 100% (see `reports/mutation/` after `npm run test:mutation`).
 
 A plate belongs to a car and through it to a person, so it is personal data. The repository holds no real plate: every example is invented in a valid format.
 
