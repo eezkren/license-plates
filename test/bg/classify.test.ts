@@ -74,7 +74,7 @@ describe("classify: regular plates (Наредба № I-45, чл. 24, ал. 1)"
     expect(kindOf(`C${letter}1234AB`)).toBe("unrecognised");
   });
 
-  it("does not take a code no region has: the founder's „AA1234GG“ and its cousins", () => {
+  it("does not take a code no region has, such as „AA1234GG“, which looks Bulgarian at a glance", () => {
     expect(kindOf("AA1234GG")).toBe("unrecognised");
     expect(kindOf("AA1234AB")).toBe("unrecognised");
     expect(kindOf("KK1234AB")).toBe("unrecognised");
@@ -174,11 +174,11 @@ describe("classify: personalised plates (Наредба № I-45, чл. 24, ал
     });
   });
 
-  it("reads six digits as personalised: МВР shows „ЕВ 111666“ as its example", () => {
-    expect(classify("EB 111666")).toMatchObject({
+  it("reads six digits as personalised, as МВР's own example of the kind does", () => {
+    expect(classify("EB 777000")).toMatchObject({
       kind: "personalised",
       code: "EB",
-      text: "111666",
+      text: "777000",
     });
   });
 
@@ -244,16 +244,16 @@ describe("classify: transit plates (Наредба № I-45, чл. 29, ал. 3)"
   });
 
   it("reads five digits around М as a category L transit plate, two before and three after", () => {
-    expect(classify("85 М 528")).toEqual({
+    expect(classify("47 М 316")).toEqual({
       status: "recognised",
       country: "BG",
       kind: "transit",
-      plate: "85M528",
-      display: "85 M 528",
+      plate: "47M316",
+      display: "47 M 316",
       basis: LEGAL_BASIS.transit,
       letter: "M",
-      before: "85",
-      after: "528",
+      before: "47",
+      after: "316",
       categoryL: true,
     });
   });
@@ -268,32 +268,32 @@ describe("classify: transit plates (Наредба № I-45, чл. 29, ал. 3)"
     ["two letters", "123TT456"],
     ["a letter before", "A123T456"],
     ["a letter after", "123T456A"],
-  ])("does not read %s as transit", (_, raw) => {
-    expect(kindOf(raw)).not.toBe("transit");
+  ])("does not read %s as anything", (_, raw) => {
+    expect(kindOf(raw)).toBe("unrecognised");
   });
 });
 
 describe("classify: dealer plates (Наредба № I-45, чл. 30, ал. 2)", () => {
   it("reads six digits either side of В", () => {
-    expect(classify("198 В 229")).toEqual({
+    expect(classify("305 В 418")).toEqual({
       status: "recognised",
       country: "BG",
       kind: "dealer",
-      plate: "198B229",
-      display: "198 B 229",
+      plate: "305B418",
+      display: "305 B 418",
       basis: LEGAL_BASIS.dealer,
-      before: "198",
-      after: "229",
+      before: "305",
+      after: "418",
       categoryL: false,
     });
   });
 
   it("reads five digits around В as a category L dealer plate", () => {
-    expect(classify("85В528")).toMatchObject({
+    expect(classify("47В316")).toMatchObject({
       kind: "dealer",
-      display: "85 B 528",
-      before: "85",
-      after: "528",
+      display: "47 B 316",
+      before: "47",
+      after: "316",
       categoryL: true,
     });
   });
@@ -305,8 +305,8 @@ describe("classify: dealer plates (Наредба № I-45, чл. 30, ал. 2)",
     ["four digits after", "123B4567"],
     ["a letter before", "A123B456"],
     ["a letter after", "123B456A"],
-  ])("does not read %s as a dealer plate", (_, raw) => {
-    expect(kindOf(raw)).not.toBe("dealer");
+  ])("does not read %s as anything", (_, raw) => {
+    expect(kindOf(raw)).toBe("unrecognised");
   });
 });
 
@@ -336,13 +336,23 @@ describe("classify: foreign residents' plates (Наредба № I-181, чл. 1
   it.each([
     ["three digits", "XX123"],
     ["another Х code", "XK1234"],
-    ["five digits", "XX12345"],
     ["one Х", "X1234"],
-    ["a letter before", "AXX1234"],
-    ["a letter after", "XX1234A"],
-  ])("does not read %s as a foreign resident's plate", (_, raw) => {
-    expect(kindOf(raw)).not.toBe("foreigner");
+  ])("does not read %s as anything", (_, raw) => {
+    expect(kindOf(raw)).toBe("unrecognised");
   });
+
+  it.each([
+    ["five digits", "XX12345", "X", "X12345"],
+    ["a letter before", "AXX1234", "A", "XX1234"],
+    ["a letter after", "XX1234A", "X", "X1234A"],
+  ])(
+    "reads %s not as a foreign resident's plate but as a personalised one",
+    (_, raw, code, text) => {
+      // Seven characters starting with a region's code fit the personalised
+      // format; see "what the personalised format also covers" below.
+      expect(classify(raw)).toMatchObject({ kind: "personalised", code, text });
+    },
+  );
 });
 
 describe("classify: military plates", () => {
@@ -360,12 +370,15 @@ describe("classify: military plates", () => {
   });
 
   it.each([
-    ["five digits", "BA12345"],
     ["seven digits", "BA1234567"],
     ["a letter before", "ABA123456"],
     ["a letter after", "BA123456A"],
-  ])("does not read %s as military", (_, raw) => {
-    expect(kindOf(raw)).not.toBe("military");
+  ])("does not read %s as anything", (_, raw) => {
+    expect(kindOf(raw)).toBe("unrecognised");
+  });
+
+  it("reads ВА and five digits as Варна's personalised plate, not as military", () => {
+    expect(classify("BA12345")).toMatchObject({ kind: "personalised", code: "B", text: "A12345" });
   });
 });
 
@@ -395,11 +408,37 @@ describe("classify: diplomatic plates (Наредба № I-181, чл. 17)", () 
 
   it.each([
     ["three digits", "C123"],
-    ["five digits", "CT12345"],
     ["another С code", "CA1234"],
-    ["a letter before", "ACC1234"],
-  ])("does not read %s as diplomatic", (_, raw) => {
-    expect(kindOf(raw)).not.toBe("diplomatic");
+  ])("does not read %s as anything", (_, raw) => {
+    expect(kindOf(raw)).toBe("unrecognised");
+  });
+
+  it.each([
+    ["five digits", "CT12345", "C", "T12345"],
+    ["a letter before", "ACC1234", "A", "CC1234"],
+  ])("reads %s not as diplomatic but as a personalised plate", (_, raw, code, text) => {
+    expect(classify(raw)).toMatchObject({ kind: "personalised", code, text });
+  });
+});
+
+describe("classify: what the personalised format also covers", () => {
+  // Чл. 24, ал. 7 allows any six of the twelve letters and digits after a
+  // region's code, so many strings that are a typo, another kind typed oddly or
+  // another country's plate are still a possible Bulgarian plate. The answer to
+  // "can this be Bulgarian" is then yes, and it is not a warning. These pin what
+  // such strings are read as, so a change to it is a visible decision.
+  it.each([
+    ["a regular plate missing a digit", "PB 123 AB", "P", "B123AB"],
+    ["a two-row motorcycle plate typed in reading order", "PB A 3579", "P", "BA3579"],
+    ["a two-row plate with a two-letter series in reading order", "CA BX 1234", "CA", "BX1234"],
+    ["a third plate with a one-letter series", "CA 5 1234 B", "CA", "51234B"],
+    ["a farm machinery plate", "PB 00001", "P", "B00001"],
+  ])("reads %s as personalised", (_, raw, code, text) => {
+    expect(classify(raw)).toMatchObject({ kind: "personalised", code, text });
+  });
+
+  it("does not cover a third plate with a two-letter series: nine characters is no format", () => {
+    expect(kindOf("CA 5 1234 BX")).toBe("unrecognised");
   });
 });
 

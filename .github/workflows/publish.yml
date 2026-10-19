@@ -2,7 +2,8 @@ name: Publish
 
 # Publishes to npm when a GitHub release is published. The tarball is built
 # here, from the tagged commit, and signed with npm provenance, so anyone can
-# check on npmjs.com which commit and workflow produced it.
+# check on npmjs.com which commit and workflow produced it. Provenance needs a
+# public repository. Actions are pinned to commits; Dependabot keeps them current.
 
 on:
   release:
@@ -17,12 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: npm
+          # No dependency cache in the release job: a poisoned cache is the
+          # cheapest way into a signed release.
+          package-manager-cache: false
       # Trusted publishing needs npm 11.5.1 or later.
       - run: npm install --global npm@^11.5.1
       - run: npm ci

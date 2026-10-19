@@ -1,11 +1,16 @@
 import { normalize } from "./normalize.js";
 
 /**
- * Any Cyrillic letter. After `normalize` has mapped the twelve plate letters to
- * Latin, a Cyrillic letter that is left is one no plate has: Б, Г, Д and the
- * rest of the Bulgarian alphabet (Наредба № I-45, чл. 24, ал. 7 allows only the
- * twelve), and Ё, Ы, Э, Ukrainian І or Serbian Ј, which are on no Bulgarian
- * plate either.
+ * Any Cyrillic letter. After `normalize` has mapped the twelve look-alike
+ * letters to Latin, a Cyrillic letter that is left is one no Bulgarian plate
+ * has: Б, Г, Д and the rest of the Bulgarian alphabet (a Bulgarian plate carries
+ * only А В Е К М Н О Р С Т У Х, see letters.ts), and Ё, Ы, Э or Serbian Ј.
+ *
+ * Any Cyrillic letter, not a list of them, because that is MotoManager's rule
+ * and this package must refuse exactly what it refuses (MOTO-493). It does
+ * refuse one real plate letter: Ukrainian plates use І (U+0406). A Ukrainian
+ * plate typed in Cyrillic is therefore refused rather than warned about; mapping
+ * І to Latin I is a change to make in both places at once.
  *
  * Only Cyrillic, and not "anything outside the twelve": a Latin letter such as
  * „G“ or „Ü“ can be on a foreign plate, and this package does not decide that a
@@ -30,8 +35,8 @@ export type CheckResult =
 
 /**
  * The only refusal this package makes. A plate is refused when it normalises to
- * nothing (blank, or dashes only) or when it keeps a Cyrillic letter that no
- * plate has. Everything else passes, including a format nobody recognises:
+ * nothing (blank, or dashes only) or when it keeps a Cyrillic letter outside the
+ * twelve look-alikes. Everything else passes, including a format nobody recognises:
  * whether a plate looks Bulgarian is `classify`'s question, and its answer is a
  * warning, not a refusal (ADR 0001).
  *

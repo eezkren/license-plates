@@ -7,9 +7,12 @@ describe("check", () => {
     expect(check("ca-1234-bx")).toEqual({ ok: true, plate: "CA1234BX" });
   });
 
-  it("passes all twelve plate letters, in either alphabet and either case", () => {
-    expect(check("ав 12 кмнорстух")).toEqual({ ok: true, plate: "AB12KMHOPCTYX" });
-  });
+  it.each(["АВЕКМНОРСТУХ", "авекмнорстух", "ABEKMHOPCTYX", "abekmhopctyx", "АbЕkМhОpСtУx"])(
+    "passes all twelve plate letters, typed as %s",
+    (raw) => {
+      expect(check(raw)).toEqual({ ok: true, plate: "ABEKMHOPCTYX" });
+    },
+  );
 
   it.each(["", "   ", "-", "—", " – ", "\t\n"])("refuses %j as empty", (raw) => {
     expect(check(raw)).toEqual({ ok: false, reason: "empty", plate: "" });
@@ -24,8 +27,10 @@ describe("check", () => {
     });
   });
 
-  // The Bulgarian letters outside the twelve. Наредба № I-45, чл. 24, ал. 7
-  // allows only А В Е К М Н О Р С Т У Х, so any of these makes it no plate.
+  // The Bulgarian letters outside the twelve. A Bulgarian plate carries only
+  // А В Е К М Н О Р С Т У Х (МВР's rule since 1992 for codes and series;
+  // Наредба № I-45, чл. 24, ал. 7 for the personalised six), so any of these
+  // makes it no plate this package can read.
   it.each([
     "Б",
     "Г",
@@ -55,7 +60,7 @@ describe("check", () => {
   });
 
   it.each(["Ё", "Ы", "Э", "І", "Ј", "Ї", "Ў"])(
-    "refuses %s too: the rule is any Cyrillic letter left, not a list of Bulgarian ones",
+    "refuses %s too: the rule is any Cyrillic letter left, as in MotoManager, not a list of Bulgarian ones",
     (letter) => {
       expect(check(`CA1234${letter}B`)).toMatchObject({
         ok: false,

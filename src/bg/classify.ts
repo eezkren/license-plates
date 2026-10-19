@@ -79,8 +79,9 @@ export interface TrailerPlate extends Recognised<"trailer"> {
 /**
  * An all-electric vehicle's plate: ЕА (car) or ЕМ (motorcycle) in place of the
  * region code, with four digits and a series, written in green (Наредба № I-45,
- * чл. 23, ал. 4). The codes are ГДНП's (чл. 24, ал. 2): МВР notices show ЕА in
- * use since 2022; ЕМ appears on no МВР page found on 2026-10-19.
+ * чл. 23, ал. 4). The codes are ГДНП's (чл. 24, ал. 2): notices of СДВР, ОДМВР
+ * Варна and ОДМВР Разград show ЕА in use; ЕМ appears on no МВР page found on
+ * 2026-10-19.
  */
 export interface ElectricPlate extends Recognised<"electric"> {
   readonly code: "EA" | "EM";
@@ -195,6 +196,13 @@ export function classify(raw: string): Classification {
  * The order only matters where one string fits two formats, and then the more
  * specific reading wins: „C1234AB“ fits the regular format (code С, series АВ)
  * and the personalised one (code С, text „1234AB“), and is read as regular.
+ *
+ * The personalised format is last because it is the widest: any six of the
+ * twelve letters and digits after a region's code (чл. 24, ал. 7). So a regular
+ * plate missing a digit („PB 123 AB“) or a two-row motorcycle plate typed in
+ * reading order („PB A 3579“) still fits it, as Русе's „P B123AB“ and
+ * „P BA3579“. That is the right answer to "can this be Bulgarian", and it means
+ * a typo is caught only when it leaves no Bulgarian format at all.
  */
 export function readPlate(plate: string): BulgarianPlate | undefined {
   return (

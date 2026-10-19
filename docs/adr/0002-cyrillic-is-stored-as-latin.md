@@ -5,7 +5,7 @@
 
 ## Context
 
-A Bulgarian plate uses only twelve letters: А В Е К М Н О Р С Т У Х (Наредба № I-45, чл. 24, ал. 7). МВР chose them because Cyrillic and Latin share them, so a plate reads the same to a Bulgarian and to a foreign camera or police officer.
+A Bulgarian plate uses only twelve letters: А В Е К М Н О Р С Т У Х. МВР has used only these for codes and series since 1992, because Cyrillic and Latin share them, so a plate reads the same to a Bulgarian and to a foreign camera or police officer; Наредба № I-45, чл. 24, ал. 7 names the same twelve for the personalised plate.
 
 People type them both ways. On a Bulgarian keyboard „СА 1234 ВХ“ is six Cyrillic letters; on an English one „CA 1234 BX“ is six Latin letters. They look identical and are different strings. Stored as typed, the same car becomes two records, and a search for one misses the other.
 
