@@ -14,7 +14,7 @@ A package that claims many countries and keeps none of them current does more ha
 1. **Bulgaria is the only country covered today.**
 2. **Each country is a module** in its own folder (`src/bg/`), with its own entry point (`license-plates/bg`), its own rules, its own sources and its own tests (`test/bg/`). Its `classify` answers for that country alone: „български ли е и от какъв вид“.
 3. **The root entry is country-neutral.** `normalize` and `check` are shared by every country, because a plate has one stored form whatever its country (ADR 0002). The root `classify` asks every country's module and answers with all the readings that fit, each tagged with its `country`; `format` prints the first. With one country that is one reading or none.
-4. **A country is added only when a real user needs it** (MotoManager asks first, MOTO-496), read from that country's primary source with the provision cited next to each rule, never from Wikipedia (its CC BY-SA licence would bind this package, and it lags behind the regulations). Adding one is a new folder, a new entry in `COUNTRIES` and its reader; the compiler refuses a country in `COUNTRIES` without a reader.
+4. **A country is added only when a real user needs it** (MotoManager asks first), read from that country's primary source with the provision cited next to each rule, never from Wikipedia (its CC BY-SA licence would bind this package, and it lags behind the regulations). Adding one is a new folder, a new entry in `COUNTRIES` and its reader; the compiler refuses a country in `COUNTRIES` without a reader.
 
 ## Consequences
 

@@ -4,7 +4,7 @@ import { check, normalize } from "../src/index.js";
 
 /**
  * MotoManager's plate rules before this package, restated as the reference the
- * package must match so MotoManager can swap its own code for it (MOTO-495).
+ * package must match so MotoManager can swap its own code for it.
  * Restated from MotoManager 0.7.161, `domain/shared/value-objects/
  * license-plate.ts` (`normalizeLicensePlate`, `checkPlate`) and `placeholder.ts`
  * (`stripPlaceholderChars`), on 2026-10-19. Written differently on purpose:

@@ -7,7 +7,7 @@ import { normalize } from "./normalize.js";
  * only А В Е К М Н О Р С Т У Х, see letters.ts), and Ё, Ы, Э or Serbian Ј.
  *
  * Any Cyrillic letter, not a list of them, because that is MotoManager's rule
- * and this package must refuse exactly what it refuses (MOTO-493). It does
+ * and this package must refuse exactly what it refuses. It does
  * refuse one real plate letter: Ukrainian plates use І (U+0406). A Ukrainian
  * plate typed in Cyrillic is therefore refused rather than warned about; mapping
  * І to Latin I is a change to make in both places at once.

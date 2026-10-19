@@ -19,7 +19,7 @@ People type them both ways. On a Bulgarian keyboard „СА 1234 ВХ“ is six 
 ## Consequences
 
 - „СА 1234 ВХ“, „ca-1234-bx“ and „CA1234BX“ are one plate, and compare equal after `normalize`.
-- The stored form is what MotoManager already stored before this package (MOTO-493); `test/parity.test.ts` checks that the two agree on any string.
+- The stored form is what MotoManager already stored before this package; `test/parity.test.ts` checks that the two agree on any string.
 - The stored form is the same for every country (ADR 0003): `normalize` and `check` live at the package root, not in a country module.
 - Separators a plate from an uncovered country needs to be read („B-XY 123“) are lost in storage. `format` cannot put them back, because it does not know that country's formats (ADR 0003). That is the cost of one comparable form.
 
