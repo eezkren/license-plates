@@ -1,0 +1,41 @@
+name: Publish
+
+# Publishes to npm when a GitHub release is published. The tarball is built
+# here, from the tagged commit, and signed with npm provenance, so anyone can
+# check on npmjs.com which commit and workflow produced it.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # npm provenance and trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install --global npm@^11.5.1
+      - run: npm ci
+      - name: The tag matches package.json
+        run: test "v$(node -p 'require("./package.json").version')" = "${GITHUB_REF_NAME}"
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run check:package
+      - run: npm publish --provenance --access public
+        env:
+          # Only for the first release. Once trusted publishing is set up on
+          # npmjs.com for this workflow, delete the NPM_TOKEN secret: npm then
+          # authenticates with the workflow's OIDC token instead.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
