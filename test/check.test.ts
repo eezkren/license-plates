@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { check } from "../src/index.js";
+import { check, MAX_PLATE_LENGTH } from "../src/index.js";
 
 describe("check", () => {
   it("answers the normalised plate for a plate", () => {
@@ -98,5 +98,46 @@ describe("check", () => {
 
   it("passes a plate whose format nobody recognises: that is a warning, not a refusal", () => {
     expect(check("12345678901")).toEqual({ ok: true, plate: "12345678901" });
+  });
+
+  it("is twelve characters long at most", () => {
+    expect(MAX_PLATE_LENGTH).toBe(12);
+  });
+
+  it.each([
+    ["the longest Irish plate", "132-DL-123456", "132DL123456"],
+    ["a German historic plate", "M-AB 1234H", "MAB1234H"],
+    ["twelve characters", "AB12-CD34-EF56", "AB12CD34EF56"],
+  ])("passes %s", (_, raw, plate) => {
+    expect(check(raw)).toEqual({ ok: true, plate });
+  });
+
+  it("counts the length after normalising, so separators do not count", () => {
+    expect(check(" A-B-C-D-E-F-G-H-I-J-K-L ")).toEqual({ ok: true, plate: "ABCDEFGHIJKL" });
+  });
+
+  it("refuses thirteen characters as too long", () => {
+    expect(check("AB12CD34EF56G")).toEqual({
+      ok: false,
+      reason: "too-long",
+      plate: "AB12CD34EF56G",
+    });
+  });
+
+  it("refuses a pasted wall of text as too long", () => {
+    const plate = "CA1234AB".repeat(250);
+    expect(check(plate)).toEqual({ ok: false, reason: "too-long", plate });
+  });
+
+  it("counts an upper case that grows the plate: ß becomes SS", () => {
+    expect(check("ßßßßßßß")).toEqual({ ok: false, reason: "too-long", plate: "SS".repeat(7) });
+  });
+
+  it("refuses a plate too long before naming its impossible letters", () => {
+    expect(check("CA1234БB".repeat(2))).toEqual({
+      ok: false,
+      reason: "too-long",
+      plate: "CA1234БB".repeat(2),
+    });
   });
 });

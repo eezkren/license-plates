@@ -18,13 +18,35 @@ import { normalize } from "./normalize.js";
  */
 const CYRILLIC = /\p{Script=Cyrillic}/gu;
 
+/**
+ * The longest plate `check` passes, counted after `normalize` in UTF-16 code
+ * units. A field's `maxlength` needs more: the dashes and spaces typed with the
+ * plate count there too.
+ *
+ * The longest European format is the Irish one since 2013, YYH-CC-SSSSSS: two
+ * digits of the year, the half-year (1 or 2), a county code of one or two
+ * letters and a sequence of up to six digits, eleven characters without the
+ * dashes. The year and half-year digits come from S.I. No. 542 of 2012 and
+ * S.I. No. 452 of 2013 (irishstatutebook.ie), the county codes from Revenue's
+ * „Registration number format“ (revenue.ie/en/vrt/documents/vrt/
+ * registration-number-format.pdf); the six-digit sequence is the format as
+ * issued, not a figure read in the statute. Twelve is eleven plus one spare. A Bulgarian plate is at most eight;
+ * eight would refuse Irish plates and German historic H plates („M-AB 1234H“,
+ * ten).
+ *
+ * It is a ceiling against what no plate can be (a paste of a whole sentence),
+ * not a country's rule, so it applies whatever country the plate is from.
+ */
+export const MAX_PLATE_LENGTH = 12;
+
 /** Why `check` refused a plate. */
-export type RefusalReason = "empty" | "impossible-characters";
+export type RefusalReason = "empty" | "too-long" | "impossible-characters";
 
 /** The answer of `check`: the normalised plate, or why it cannot be a plate. */
 export type CheckResult =
   | { readonly ok: true; readonly plate: string }
   | { readonly ok: false; readonly reason: "empty"; readonly plate: "" }
+  | { readonly ok: false; readonly reason: "too-long"; readonly plate: string }
   | {
       readonly ok: false;
       readonly reason: "impossible-characters";
@@ -35,8 +57,10 @@ export type CheckResult =
 
 /**
  * The only refusal this package makes. A plate is refused when it normalises to
- * nothing (blank, or dashes only) or when it keeps a Cyrillic letter outside the
- * twelve look-alikes. Everything else passes, including a format nobody recognises:
+ * nothing (blank, or dashes only), when it is longer than `MAX_PLATE_LENGTH`
+ * after normalising, or when it keeps a Cyrillic letter outside the twelve
+ * look-alikes. Length is checked before letters: a plate too long to be one is
+ * refused as that, without listing its letters. Everything else passes, including a format nobody recognises:
  * whether a plate looks Bulgarian is `classify`'s question, and its answer is a
  * warning, not a refusal (ADR 0001).
  *
@@ -45,6 +69,7 @@ export type CheckResult =
 export function check(raw: string): CheckResult {
   const plate = normalize(raw);
   if (plate === "") return { ok: false, reason: "empty", plate };
+  if (plate.length > MAX_PLATE_LENGTH) return { ok: false, reason: "too-long", plate };
   const characters = [...new Set(plate.match(CYRILLIC))];
   if (characters.length > 0) {
     return { ok: false, reason: "impossible-characters", plate, characters };

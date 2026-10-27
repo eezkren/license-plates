@@ -5,7 +5,7 @@
  * also reachable as `license-plates/<country>`.
  */
 export { normalize } from "./normalize.js";
-export { check, type CheckResult, type RefusalReason } from "./check.js";
+export { check, MAX_PLATE_LENGTH, type CheckResult, type RefusalReason } from "./check.js";
 export {
   classify,
   COUNTRIES,

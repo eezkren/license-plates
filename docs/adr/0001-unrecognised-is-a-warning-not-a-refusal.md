@@ -12,6 +12,7 @@ The package also cannot know whether a Bulgarian-looking plate was ever issued. 
 ## Decision
 
 1. **Refuse only what no plate can be.** `check` refuses a plate that normalises to nothing (blank, dashes only) and one that keeps a Cyrillic letter after the twelve look-alikes А В Е К М Н О Р С Т У Х are mapped to Latin. A Bulgarian plate carries only those twelve (МВР's rule since 1992 for codes and series; Наредба № I-45, чл. 24, ал. 7 for the personalised plate), and no plate carries Б or Ж. The rule is "any Cyrillic letter left" because that is MotoManager's rule, which the package must match; its one known cost is Ukrainian І, a real plate letter, which is refused too (see `src/check.ts`).
+   Since 0.2.0 (2026-10-27) `check` also refuses a plate longer than twelve characters after normalising (`MAX_PLATE_LENGTH`). No European format is longer than eleven (the Irish YYH-CC-SSSSSS), so this too is what no plate can be; the reasoning and sources are on `MAX_PLATE_LENGTH` in `src/check.ts`.
 2. **Everything else passes `check`.** A Latin letter outside the twelve („G“, „Ü“), a dot, a format nobody knows: all pass. They can be on a foreign plate.
 3. **`classify` answers, it does not judge.** A plate is `recognised` (with its country and kind), `unrecognised` (no covered country's format fits), or `invalid` (what `check` refuses). The caller decides what to do with `unrecognised`; the intended answer is a warning such as „Не прилича на български номер. Сигурни ли сте?“.
 

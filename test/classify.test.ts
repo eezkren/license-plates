@@ -42,6 +42,12 @@ describe("classify (all countries)", () => {
       display: "CA1234БB",
       characters: ["Б"],
     });
+    expect(classify("AB12CD34EF56G")).toEqual({
+      status: "invalid",
+      reason: "too-long",
+      plate: "AB12CD34EF56G",
+      display: "AB12CD34EF56G",
+    });
   });
 
   it("agrees with the Bulgarian module on every input while Bulgaria is the only country", () => {

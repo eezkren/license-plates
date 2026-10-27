@@ -13,13 +13,19 @@ export interface UnrecognisedPlate {
   readonly display: string;
 }
 
-/** A plate `check` refuses: empty, or with a character no plate has. */
+/** A plate `check` refuses: empty, too long, or with a character no plate has. */
 export type InvalidPlate =
   | {
       readonly status: "invalid";
       readonly reason: "empty";
       readonly plate: "";
       readonly display: "";
+    }
+  | {
+      readonly status: "invalid";
+      readonly reason: "too-long";
+      readonly plate: string;
+      readonly display: string;
     }
   | {
       readonly status: "invalid";
@@ -34,6 +40,9 @@ export type InvalidPlate =
 export function refuse(refusal: Exclude<CheckResult, { ok: true }>): InvalidPlate {
   if (refusal.reason === "empty") {
     return { status: "invalid", reason: "empty", plate: "", display: "" };
+  }
+  if (refusal.reason === "too-long") {
+    return { status: "invalid", reason: "too-long", plate: refusal.plate, display: refusal.plate };
   }
   const { reason, plate, characters } = refusal;
   return { status: "invalid", reason, plate, display: plate, characters };

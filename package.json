@@ -1,6 +1,6 @@
 {
   "name": "license-plates",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vehicle registration plates by country, starting with Bulgaria: normalise, check, classify and format, with every rule cited to its regulation.",
   "keywords": [
     "license-plate",

@@ -10,6 +10,9 @@ import { check, normalize } from "../src/index.js";
  * (`stripPlaceholderChars`), on 2026-10-19. Written differently on purpose:
  * code-unit `split("")` and a per-character map, where the package uses one
  * regex replacement, so the two only agree if the behaviour does.
+ *
+ * One rule was added to both on 2026-10-27, in 0.2.0: a plate longer than
+ * twelve characters after normalising is refused (`MAX_PLATE_LENGTH`).
  */
 const REFERENCE_MAP: Record<string, string> = {
   А: "A",
@@ -38,7 +41,9 @@ function referenceNormalize(plate: string): string {
 
 function referenceCheck(raw: string): { ok: true; value: string } | { ok: false } {
   const plate = referenceNormalize(raw);
-  if (plate === "" || /\p{Script=Cyrillic}/u.test(plate)) return { ok: false };
+  if (plate === "" || plate.split("").length > 12 || /\p{Script=Cyrillic}/u.test(plate)) {
+    return { ok: false };
+  }
   return { ok: true, value: plate };
 }
 
@@ -55,11 +60,11 @@ const TYPED = fc.string({
     ..." \t\n\u00a0-\u2010\u2011\u2012\u2013\u2014\u2015\u2212\ufe58\ufe63\uff0d",
     ...".,/_*ÄÖÜßΑΒΕ",
   ),
-  maxLength: 12,
+  maxLength: 16,
 });
 
 /** Anything at all, including lone surrogates. */
-const ANY = fc.string({ unit: "binary", maxLength: 12 });
+const ANY = fc.string({ unit: "binary", maxLength: 16 });
 
 describe("parity with MotoManager's rules", () => {
   it.each([

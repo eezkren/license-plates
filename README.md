@@ -49,13 +49,15 @@ npm install license-plates
 | Функция          | Отговаря на                                                                                                                                                                                                                                              |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `normalize(raw)` | Формата за пазене и сравнение: главни латински букви, без интервали и тирета. 12-те кирилски букви, които приличат на латински, стават латинските (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                                          |
-| `check(raw)`     | Може ли изобщо да е номер. Отказва празен номер (или само тирета) и номер с кирилска буква извън 12-те (`reason: "impossible-characters"` и самите букви). Всичко друго минава.                                                                          |
+| `check(raw)`     | Може ли изобщо да е номер. Отказва празен номер (или само тирета), номер по-дълъг от 12 знака след нормализиране (`reason: "too-long"`) и номер с кирилска буква извън 12-те (`reason: "impossible-characters"` и самите букви). Всичко друго минава.    |
 | `classify(raw)`  | От коя държава може да е. `status` е `"recognised"` (в `matches` е прочитът на всяка държава, на чийто формат отговаря, с `country` и `kind`), `"unrecognised"` (нито един познат формат: предупреждение) или `"invalid"` (това, което `check` отказва). |
 | `format(raw)`    | Единственият начин за показване: „CA 1234 BX“. Разпознат номер се разделя така, както е на табелата; всичко останало се показва нормализирано.                                                                                                           |
 
-Освен тях: `COUNTRIES` (покритите държави, засега `["BG"]`), `CYRILLIC_TO_LATIN` и модулът `bg`.
+Освен тях: `COUNTRIES` (покритите държави, засега `["BG"]`), `CYRILLIC_TO_LATIN`, `MAX_PLATE_LENGTH` и модулът `bg`.
 
-`license-plates/bg`, само България: `classify(raw)` с отговор „български ли е и от какъв вид“ (`status: "recognised"` с `kind`, частите на номера и `basis`, члена от наредбата; иначе `"unrecognised"` или `"invalid"`), `format(raw)`, `REGIONS` (кодът на всяка област), `isRegionCode`, `LEGAL_BASIS` (основанието за всеки вид), `PLATE_LETTERS`, както и `normalize` и `check`, за да стига един import.
+**Защо 12 знака.** Най-дългият европейски формат е ирландският от 2013 г., YYH-CC-SSSSSS: година, полугодие, код на графство с 1–2 букви и пореден номер до 6 цифри, общо 11 знака без тиретата (S.I. No. 542 of 2012 и S.I. No. 452 of 2013; Revenue, „Registration number format“). 12 е това плюс един резервен. Българският номер е до 8 знака, но 8 би отказало ирландски номера и германските исторически („M-AB 1234H“, 10). Таванът е срещу това, което не може да е номер (поставен цял абзац), не правило на държава. `MAX_PLATE_LENGTH` е в UTF-16 единици, като `maxlength` на HTML поле.
+
+`license-plates/bg`, само България: `classify(raw)` с отговор „български ли е и от какъв вид“ (`status: "recognised"` с `kind`, частите на номера и `basis`, члена от наредбата; иначе `"unrecognised"` или `"invalid"`), `format(raw)`, `REGIONS` (кодът на всяка област), `isRegionCode`, `LEGAL_BASIS` (основанието за всеки вид), `PLATE_LETTERS`, както и `normalize`, `check` и `MAX_PLATE_LENGTH`, за да стига един import.
 
 ### Български номера
 
@@ -127,16 +129,18 @@ npm install license-plates
 
 `license-plates`, shared by all countries:
 
-| Function         | Answers                                                                                                                                                                                                                              |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `normalize(raw)` | The form to store and compare: Latin capitals, no spaces or dashes. The twelve Cyrillic letters that look like Latin ones become the Latin letters (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                     |
-| `check(raw)`     | Can it be a plate at all. Refuses an empty plate (or dashes only) and a plate with a Cyrillic letter outside the twelve (`reason: "impossible-characters"`, with the letters). Everything else passes.                               |
-| `classify(raw)`  | Which country it can be from. `status` is `"recognised"` (`matches` holds each country's reading whose format fits, with `country` and `kind`), `"unrecognised"` (no known format: a warning) or `"invalid"` (what `check` refuses). |
-| `format(raw)`    | The one way to show a plate: "CA 1234 BX". A recognised plate is spaced as it is printed; anything else is shown normalised.                                                                                                         |
+| Function         | Answers                                                                                                                                                                                                                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `normalize(raw)` | The form to store and compare: Latin capitals, no spaces or dashes. The twelve Cyrillic letters that look like Latin ones become the Latin letters (А→A, В→B, Е→E, К→K, М→M, Н→H, О→O, Р→P, С→C, Т→T, У→Y, Х→X).                                                                     |
+| `check(raw)`     | Can it be a plate at all. Refuses an empty plate (or dashes only), a plate longer than twelve characters once normalised (`reason: "too-long"`) and a plate with a Cyrillic letter outside the twelve (`reason: "impossible-characters"`, with the letters). Everything else passes. |
+| `classify(raw)`  | Which country it can be from. `status` is `"recognised"` (`matches` holds each country's reading whose format fits, with `country` and `kind`), `"unrecognised"` (no known format: a warning) or `"invalid"` (what `check` refuses).                                                 |
+| `format(raw)`    | The one way to show a plate: "CA 1234 BX". A recognised plate is spaced as it is printed; anything else is shown normalised.                                                                                                                                                         |
 
-Also exported: `COUNTRIES` (the covered countries, `["BG"]` for now), `CYRILLIC_TO_LATIN` and the `bg` module.
+Also exported: `COUNTRIES` (the covered countries, `["BG"]` for now), `CYRILLIC_TO_LATIN`, `MAX_PLATE_LENGTH` and the `bg` module.
 
-`license-plates/bg`, Bulgaria only: `classify(raw)` answering "is it Bulgarian, and of which kind" (`status: "recognised"` with `kind`, the plate's parts and `basis`, the provision it comes from; otherwise `"unrecognised"` or `"invalid"`), `format(raw)`, `REGIONS` (each region's code), `isRegionCode`, `LEGAL_BASIS` (the provision for each kind), `PLATE_LETTERS`, and `normalize` and `check` too, so one import is enough.
+**Why twelve characters.** The longest European format is the Irish one since 2013, YYH-CC-SSSSSS: the year, the half-year, a county code of one or two letters and a sequence of up to six digits, eleven characters without the dashes (S.I. No. 542 of 2012 and S.I. No. 452 of 2013; Revenue, "Registration number format"). Twelve is that plus one spare. A Bulgarian plate is at most eight, but eight would refuse Irish plates and German historic plates ("M-AB 1234H", ten). The ceiling is against what cannot be a plate (a pasted paragraph), not a country's rule. `MAX_PLATE_LENGTH` counts UTF-16 code units, as an HTML `maxlength` does.
+
+`license-plates/bg`, Bulgaria only: `classify(raw)` answering "is it Bulgarian, and of which kind" (`status: "recognised"` with `kind`, the plate's parts and `basis`, the provision it comes from; otherwise `"unrecognised"` or `"invalid"`), `format(raw)`, `REGIONS` (each region's code), `isRegionCode`, `LEGAL_BASIS` (the provision for each kind), `PLATE_LETTERS`, `normalize`, `check` and `MAX_PLATE_LENGTH` too, so one import is enough.
 
 ### Bulgarian plates
 

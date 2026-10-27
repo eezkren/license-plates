@@ -8,7 +8,16 @@ import * as bg from "../src/bg/index.js";
 describe("exports", () => {
   it("of license-plates", () => {
     expect(Object.keys(root).sort()).toEqual(
-      ["COUNTRIES", "CYRILLIC_TO_LATIN", "bg", "check", "classify", "format", "normalize"].sort(),
+      [
+        "COUNTRIES",
+        "CYRILLIC_TO_LATIN",
+        "MAX_PLATE_LENGTH",
+        "bg",
+        "check",
+        "classify",
+        "format",
+        "normalize",
+      ].sort(),
     );
   });
 
@@ -16,6 +25,7 @@ describe("exports", () => {
     expect(Object.keys(bg).sort()).toEqual(
       [
         "LEGAL_BASIS",
+        "MAX_PLATE_LENGTH",
         "PLATE_LETTERS",
         "REGIONS",
         "check",
