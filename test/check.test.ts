@@ -59,15 +59,25 @@ describe("check", () => {
     });
   });
 
-  it.each(["Ё", "Ы", "Э", "І", "Ј", "Ї", "Ў"])(
+  // Ukrainian Ї, Є and Ґ and Belarusian Ў too: since 0.3.0 only І of the
+  // Ukrainian and Belarusian letters is mapped, and nothing else.
+  it.each(["Ё", "Ы", "Э", "Ј", "Ї", "Є", "Ґ", "Ў"])(
     "refuses %s too: the rule is any Cyrillic letter left, as in MotoManager, not a list of Bulgarian ones",
     (letter) => {
-      expect(check(`CA1234${letter}B`)).toMatchObject({
+      expect(check(`CA1234${letter}B`)).toEqual({
         ok: false,
         reason: "impossible-characters",
+        plate: `CA1234${letter}B`,
+        characters: [letter],
       });
     },
   );
+
+  it("passes a Ukrainian plate typed in Cyrillic, stored as the Latin one: І is I", () => {
+    expect(check("АА 1234 ВІ")).toEqual({ ok: true, plate: "AA1234BI" });
+    expect(check("аа1234ві")).toEqual({ ok: true, plate: "AA1234BI" });
+    expect(check("AA 1234 BI")).toEqual({ ok: true, plate: "AA1234BI" });
+  });
 
   it("names each impossible letter once, in the order it first appears", () => {
     expect(check("ЖЖ 1234 ЮЖ")).toEqual({

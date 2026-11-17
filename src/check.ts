@@ -1,20 +1,22 @@
 import { normalize } from "./normalize.js";
 
 /**
- * Any Cyrillic letter. After `normalize` has mapped the twelve look-alike
- * letters to Latin, a Cyrillic letter that is left is one no Bulgarian plate
- * has: Б, Г, Д and the rest of the Bulgarian alphabet (a Bulgarian plate carries
- * only А В Е К М Н О Р С Т У Х, see letters.ts), and Ё, Ы, Э or Serbian Ј.
+ * Any Cyrillic letter. After `normalize` has mapped the thirteen look-alike
+ * letters to Latin, a Cyrillic letter that is left is one this package reads on
+ * no plate: Б, Г, Д and the rest of the Bulgarian alphabet (a Bulgarian plate
+ * carries only А В Е К М Н О Р С Т У Х, see letters.ts), and Ё, Ы, Э, Ї, Ў or
+ * Serbian Ј.
  *
  * Any Cyrillic letter, not a list of them, because that is MotoManager's rule
- * and this package must refuse exactly what it refuses. It does
- * refuse one real plate letter: Ukrainian plates use І (U+0406). A Ukrainian
- * plate typed in Cyrillic is therefore refused rather than warned about; mapping
- * І to Latin I is a change to make in both places at once.
+ * and this package must refuse exactly what it refuses. Until 0.3.0 that
+ * refused a real plate letter, Ukrainian І (U+0406); since 0.3.0 `normalize`
+ * maps it to Latin I, so a Ukrainian plate typed in Cyrillic passes (ADR 0002).
+ * A Ukrainian individual plate may still carry any letter of the Ukrainian
+ * alphabet (docs/sources.md, „Ukraine“); one with Б or Ї is refused here.
  *
- * Only Cyrillic, and not "anything outside the twelve": a Latin letter such as
- * „G“ or „Ü“ can be on a foreign plate, and this package does not decide that a
- * plate is not foreign (ADR 0001, ADR 0003).
+ * Only Cyrillic, and not "anything outside the thirteen": a Latin letter such
+ * as „G“ or „Ü“ can be on a foreign plate, and this package does not decide
+ * that a plate is not foreign (ADR 0001, ADR 0003).
  */
 const CYRILLIC = /\p{Script=Cyrillic}/gu;
 
@@ -58,7 +60,7 @@ export type CheckResult =
 /**
  * The only refusal this package makes. A plate is refused when it normalises to
  * nothing (blank, or dashes only), when it is longer than `MAX_PLATE_LENGTH`
- * after normalising, or when it keeps a Cyrillic letter outside the twelve
+ * after normalising, or when it keeps a Cyrillic letter outside the thirteen
  * look-alikes. Length is checked before letters: a plate too long to be one is
  * refused as that, without listing its letters. Everything else passes, including a format nobody recognises:
  * whether a plate looks Bulgarian is `classify`'s question, and its answer is a

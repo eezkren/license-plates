@@ -33,6 +33,12 @@ describe("classify (all countries)", () => {
     });
   });
 
+  it("answers a Ukrainian plate typed in Cyrillic unrecognised, as typed in Latin", () => {
+    const unrecognised = { status: "unrecognised", plate: "AA1234BI", display: "AA1234BI" };
+    expect(classify("АА 1234 ВІ")).toEqual(unrecognised);
+    expect(classify("AA 1234 BI")).toEqual(unrecognised);
+  });
+
   it("answers invalid for what check refuses", () => {
     expect(classify(" - ")).toEqual({ status: "invalid", reason: "empty", plate: "", display: "" });
     expect(classify("са1234бв")).toEqual({

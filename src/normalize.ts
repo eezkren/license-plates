@@ -15,18 +15,18 @@ import { CYRILLIC_TO_LATIN, type CyrillicPlateLetter } from "./letters.js";
  */
 const SEPARATORS = /[\s\p{Pd}\u2212]/gu;
 
-/** The twelve Cyrillic plate letters, as one character class. */
+/** The thirteen Cyrillic look-alikes, as one character class. */
 const CYRILLIC_PLATE_LETTER = new RegExp(`[${Object.keys(CYRILLIC_TO_LATIN).join("")}]`, "gu");
 
 /**
  * The form a plate is stored and compared in: upper case, no separators, and
- * the twelve Cyrillic plate letters replaced by the Latin letters they look
+ * the thirteen Cyrillic look-alikes replaced by the Latin letters they look
  * like, so „СА 1234 ВХ“ typed on a Bulgarian keyboard and „CA1234BX“ typed on a
  * Latin one are the same plate (ADR 0002).
  *
- * Nothing else is touched. A Cyrillic letter outside the twelve stays as it is,
- * so `check` can refuse it; a Latin letter outside the twelve stays too, because
- * a foreign plate may carry it (ADR 0001).
+ * Nothing else is touched. A Cyrillic letter outside the thirteen stays as it
+ * is, so `check` can refuse it; a Latin letter stays too, because a foreign
+ * plate may carry it (ADR 0001).
  *
  * A missing value (`null`, `undefined`, `""`) normalises to `""` rather than
  * throwing, for callers in plain JavaScript.

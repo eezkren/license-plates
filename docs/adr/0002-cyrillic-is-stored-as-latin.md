@@ -23,6 +23,20 @@ People type them both ways. On a Bulgarian keyboard „СА 1234 ВХ“ is six 
 - The stored form is the same for every country (ADR 0003): `normalize` and `check` live at the package root, not in a country module.
 - Separators a plate from an uncovered country needs to be read („B-XY 123“) are lost in storage. `format` cannot put them back, because it does not know that country's formats (ADR 0003). That is the cost of one comparable form.
 
+## Amendment, 2026-11-17 (0.3.0): Ukrainian І
+
+The map has a thirteenth letter: Ukrainian (and Belarusian) І, U+0406, maps to Latin I.
+
+Ukrainian plates write their series in А В С Е Н І К М О Р Т Х, the Cyrillic letters that look like Latin ones (МВС's „Вимоги до державних номерних знаків транспортних засобів“, Додаток 5; docs/sources.md, „Ukraine“). Until 0.3.0, „АА 1234 ВІ“ typed on a Ukrainian keyboard kept its І, and `check` refused it, while „AA 1234 BI“ typed in Latin passed with a warning: one car, two answers. MotoManager's public booking form asks for the plate, so a Ukrainian customer was turned away. The founder decided on 2026-11-13 that І is stored as I, so the plate has one stored form whatever keyboard typed it.
+
+What changes and what does not:
+
+- Decision 1 reads „the thirteen Cyrillic letters“; the map adds І→I. Decision 2 holds for І as for the twelve: Latin I is what any foreign system holds.
+- Decision 3 holds: nothing else is mapped. Every other Cyrillic letter, including Ukrainian Ї, Є, Ґ and Belarusian Ў, is still refused by `check`.
+- No Bulgarian plate carries I, so `bg.PLATE_LETTERS` stays twelve and `bg.classify` reads a plate with I as not Bulgarian: „AA1234BI“ is `unrecognised`, a warning.
+- A stored form changes only for input that `check` refused before, so nothing stored with 0.2.0 needs migrating.
+- Belarus was not checked in a primary source and nothing was changed for it (docs/sources.md, „Belarus“).
+
 ## Alternatives considered
 
 - **Store as typed, compare normalised.** Two forms on file, and every reader must remember which one it has.

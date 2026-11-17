@@ -14,6 +14,17 @@ describe("normalize", () => {
     expect(normalize("авекмнорстух")).toBe("ABEKMHOPCTYX");
   });
 
+  it("maps Ukrainian І (U+0406) to Latin I, in either case", () => {
+    expect(normalize("\u0406")).toBe("I");
+    expect(normalize("\u0456")).toBe("I");
+  });
+
+  it("stores a plate typed on a Ukrainian keyboard the same as one typed on a Latin one", () => {
+    expect(normalize("АА 1234 ВІ")).toBe("AA1234BI");
+    expect(normalize("аа-1234-ві")).toBe("AA1234BI");
+    expect(normalize("AA 1234 BI")).toBe("AA1234BI");
+  });
+
   it("stores a plate typed on a Bulgarian keyboard the same as one typed on a Latin one", () => {
     expect(normalize("СА 1234 ВХ")).toBe("CA1234BX");
     expect(normalize("CA 1234 BX")).toBe("CA1234BX");
@@ -74,6 +85,7 @@ describe("normalize", () => {
   it("leaves a Cyrillic letter no plate has as it is, for check to refuse", () => {
     expect(normalize("ДОМ")).toBe("ДOM");
     expect(normalize("дом")).toBe("ДOM");
+    expect(normalize("ЇЄҐ")).toBe("ЇЄҐ");
   });
 
   it("leaves a Latin letter outside the twelve as it is: a foreign plate may have it", () => {

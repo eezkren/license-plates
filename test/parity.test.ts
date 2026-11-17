@@ -13,6 +13,10 @@ import { check, normalize } from "../src/index.js";
  *
  * One rule was added to both on 2026-10-27, in 0.2.0: a plate longer than
  * twelve characters after normalising is refused (`MAX_PLATE_LENGTH`).
+ *
+ * One more on 2026-11-17, in 0.3.0: Ukrainian І (U+0406) maps to Latin I.
+ * MotoManager takes it by moving to 0.3.0, as it took 0.2.0, so the reference
+ * map has it too.
  */
 const REFERENCE_MAP: Record<string, string> = {
   А: "A",
@@ -27,6 +31,7 @@ const REFERENCE_MAP: Record<string, string> = {
   Т: "T",
   У: "Y",
   Х: "X",
+  І: "I",
 };
 
 function referenceNormalize(plate: string): string {
@@ -54,7 +59,7 @@ function referenceCheck(raw: string): { ok: true; value: string } | { ok: false 
 const TYPED = fc.string({
   unit: fc.constantFrom(
     ..."АВЕКМНОРСТУХавекмнорстух",
-    ..."БГДЖЗИЙЛПФЦЧШЩЪЬЮЯбгджзийлпфцчшщъьюяЁЫЭІЈ",
+    ..."БГДЖЗИЙЛПФЦЧШЩЪЬЮЯбгджзийлпфцчшщъьюяЁЫЭІЈіЇїЄєҐґЎў",
     ..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     ..."0123456789",
     ..." \t\n\u00a0-\u2010\u2011\u2012\u2013\u2014\u2015\u2212\ufe58\ufe63\uff0d",

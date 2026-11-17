@@ -1,6 +1,6 @@
 # Sources
 
-Every rule in this package comes from one of the texts below, read on 2026-10-19. Wikipedia and news articles were used only as hints for what to look for; nothing is copied from them, and no rule rests on them.
+Every rule in this package comes from one of the texts below. The Bulgarian ones were read on 2026-10-19; the one Ukrainian letter, on 2026-11-17 (see „Ukraine“ at the end). Wikipedia and news articles were used only as hints for what to look for; nothing is copied from them, and no rule rests on them.
 
 Bulgarian normative acts are not subject to copyright (Закон за авторското право и сродните му права, чл. 4, т. 1), so the provisions are quoted where a rule depends on their exact words.
 
@@ -78,3 +78,24 @@ The regulation does not list the codes (чл. 24, ал. 2 leaves them to ГДН�
 The electric code ЕА appears in notices of СДВР (the page above), [ОДМВР Варна, notice 85391](https://www.mvr.bg/varna/пресцентър/пресцентър/новини/85391) („предназначени за електрически превозни средства“) and [ОДМВР Разград, notice 89745](https://www.mvr.bg/razgrad/информационен-център/пресцентър/новини/89745). The code ЕМ for electric motorcycles appears on no МВР page found.
 
 СДВР's notices also show that Sofia's series now include О: ОА from 25.11.2025, then ОВ, ОЕ, ОК, ОМ, ОН, ОР, ОС, ОТ, and О as a second letter (ХО, НО, РО, СО, ТО). The package accepts any of the twelve letters in a series, so these need no change.
+
+## Ukraine: the letter І
+
+Since 0.3.0 `normalize` maps Ukrainian І (U+0406) to Latin I, so a Ukrainian plate typed on a Ukrainian keyboard („АА 1234 ВІ“) is stored as one typed on a Latin one („AA1234BI“). It is the only Ukrainian rule in the package: Ukraine is not a covered country, and its plates are `unrecognised` (ADR 0001, ADR 0003).
+
+The rule is the МВС's „Вимоги до державних номерних знаків транспортних засобів“, approved by наказ МВС № 166 of 2 March 2021 and registered with the Ministry of Justice on 22 March 2021 under № 353/35975. Додаток 5 („пункт 4 розділу ІІІ“) lists the letter pairs a series may use. The ones for types 2, 6 and subtypes 1-1-1, 1-3-1, 3-3, 8-1-1 and 8-1-2 are every pair of twelve letters, written in Cyrillic: А В С Е Н І К М О Р Т Х, with І as U+0406 („АІ“, „ВІ“, „ІІ“). Of these, eleven are among Bulgaria's twelve; І is the one that is not, and У, which Bulgaria uses, is not among them.
+
+| What                                                                                                                                                                                                                        | Where it was read                                                                                                                                                                                                                                                        | Read       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| Додаток 5 of the Вимоги, the series letters, in the form МВС proposed in its draft order „Про затвердження Змін до Вимог до державних номерних знаків транспортних засобів“ (published for consultation on 29 October 2022) | [МВС, the draft and its attachments](https://mvs.gov.ua/normativna-baza-mvs/proekti-normativnix-aktiv/projekt-nakazu-mvs-pro-zatverdzennya-zmin-do-vimog-do-derzavnix-nomernix-znakiv-transportnix-zasobiv): the comparison table and „Додаток 5“ (.docx), on mvs.gov.ua | 2026-11-17 |
+| Individual plates: „можна розміщувати літери — української чи латинської абетки“; the two alphabets may be mixed only in the letters that look alike                                                                        | [МВС, „Індивідуальні номерні знаки: як замовити, щоб не отримати відмову“](https://mvs.gov.ua/news/individualni-nomerni-znaki-iak-zamoviti-shhob-ne-otrimati-vidmovu), 29.03.2023                                                                                        | 2026-11-17 |
+
+What this does not settle:
+
+- **The text in force was not read.** The consolidated Вимоги are on zakon.rada.gov.ua (z0353-21), which did not answer from the network this was written on. The source above is МВС's own draft of Додаток 5 from 2022, on МВС's own site; the draft was later adopted in some form (the Вимоги were amended in 2023 and by наказ № 761 of 3 November 2025), but the adopted wording was not compared. The letter set is the same in every Ukrainian source found, and „ВІ“ in the ticket's example is one of its series. Reading z0353-21 is open work.
+- **DSTU 4278:2019** („Знаки номерні транспортних засобів“), the Ukrainian standard for plates, is sold, not published, and was not read.
+- **Individual plates may carry any Ukrainian letter.** `check` still refuses one with a Cyrillic letter outside the thirteen (Б, Г, Ґ, Є, Ї and the rest), as it did before 0.3.0. The founder decided on 2026-11-13 that only І changes.
+
+## Belarus: not checked in a primary source
+
+Belarusian plates were checked for a Cyrillic letter outside the thirteen. No primary source was read: the Belarusian МВД (mvd.gov.by), the district police page that describes the plates (belynichi.gov.by) and the standards register did not answer from the network this was written on, and pravo.by's search found no act that lists the letters (the plate standard, СТБ 914, is sold, not published). Secondary sources (news sites, quoting that district page) say Belarusian plates use the twelve letters common to Belarusian and Latin, А В Е І К М Н О Р С Т Х; if so, every one of them is among the thirteen, and Belarusian І is the same character as Ukrainian І (U+0406). Nothing in the package was changed for Belarus, and nothing rests on this finding.

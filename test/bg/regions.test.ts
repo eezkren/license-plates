@@ -38,9 +38,11 @@ describe("isRegionCode", () => {
   });
 });
 
-describe("the twelve plate letters", () => {
-  it("are the same twelve in the map and in the list", () => {
-    expect(Object.values(CYRILLIC_TO_LATIN).join("")).toBe(PLATE_LETTERS);
+describe("the plate letters", () => {
+  it("are the twelve Bulgarian ones and Ukrainian І, which no Bulgarian plate carries", () => {
+    expect(Object.keys(CYRILLIC_TO_LATIN).join("")).toBe("АВЕКМНОРСТУХ\u0406");
+    expect(Object.values(CYRILLIC_TO_LATIN).join("")).toBe(`${PLATE_LETTERS}I`);
+    expect(PLATE_LETTERS).not.toContain("I");
   });
 
   it("each map a Cyrillic capital to a Latin capital", () => {
